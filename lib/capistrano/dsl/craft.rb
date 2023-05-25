@@ -55,6 +55,10 @@ module Capistrano
       end
 
       def mysql_dump(env, output)
+        execute SSHKit::Command.new <<-EOCOMMAND
+          source "#{env}"
+          MYSQL_PWD=$DB_PASSWORD mysqldump -u $DB_USER -h #{config[:host]} -P #{config[:port]} --skip-triggers #{config[:database]} > #{output}
+        EOCOMMAND
       end
 
       def postgres_restore(env, config, input)
@@ -66,7 +70,11 @@ module Capistrano
         EOCOMMAND
       end
 
-      def mysql_restore(env, input)
+      def mysql_restore(env, config, input)
+        execute SSHKit::Command.new <<-EOCOMMAND
+          source "#{env}"
+          MYSQL_PWD=$DB_PASSWORD mysql -u $DB_USER -h #{config[:host]} -P #{config[:port]} #{config[:database]} < "#{input}"
+        EOCOMMAND
       end
 
       def database_config(env)
