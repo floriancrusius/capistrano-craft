@@ -50,7 +50,7 @@ namespace :craft do
       run_locally do
         release_roles(fetch(:craft_deploy_roles)).each do |role|
           assets_path = fetch(:assets_path)
-          return if assets_path.blank?
+          return if assets_path.nil?
           if assets_path.is_a?(String)
             execute :rsync, "-rzO #{role.user}@#{role.hostname}:#{shared_path}/#{fetch(:assets_path)}/ #{fetch(:assets_path)}"
           elsif assets_path.is_a?(Array)
@@ -67,7 +67,7 @@ namespace :craft do
       run_locally do
         release_roles(fetch(:craft_deploy_roles)).each do |role|
           assets_path = fetch(:assets_path)
-          return if assets_path.blank?
+          return if assets_path.nil?
           if assets_path.is_a?(String)
             execute :rsync, "-rzO #{assets_path}/ #{role.user}@#{role.hostname}:#{shared_path}/#{assets_path}"
           elsif assets_path.is_a?(Array)
