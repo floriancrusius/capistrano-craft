@@ -54,7 +54,7 @@ module Capistrano
         EOCOMMAND
       end
 
-      def mysql_dump(env, output)
+      def mysql_dump(env, config, output)
         execute SSHKit::Command.new <<-EOCOMMAND
           source "#{env}"
           MYSQL_PWD=$DB_PASSWORD mysqldump -u $DB_USER -h #{config[:host]} -P #{config[:port]} --skip-triggers #{config[:database]} > #{output}
