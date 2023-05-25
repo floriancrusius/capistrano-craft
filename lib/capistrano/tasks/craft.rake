@@ -30,7 +30,7 @@ namespace :craft do
     desc "Apply the project config to database after running Craft backup command"
     task :apply do
       on release_roles(fetch(:craft_deploy_roles)) do
-        craft_console "backup/db"
+        craft_console "db/backup"
         craft_console "migrate/all --no-content"
         craft_console "project-config/apply"
         craft_console "migrate"
@@ -50,7 +50,7 @@ namespace :craft do
       run_locally do
         release_roles(fetch(:craft_deploy_roles)).each do |role|
           assets_path = fetch(:assets_path)
-          return unless assets_path.present?
+          return if assets_path.blank?
           if assets_path.is_a?(String)
             execute :rsync, "-rzO #{role.user}@#{role.hostname}:#{shared_path}/#{fetch(:assets_path)}/ #{fetch(:assets_path)}"
           elsif assets_path.is_a?(Array)
@@ -67,7 +67,7 @@ namespace :craft do
       run_locally do
         release_roles(fetch(:craft_deploy_roles)).each do |role|
           assets_path = fetch(:assets_path)
-          return unless assets_path.present?
+          return if assets_path.blank?
           if assets_path.is_a?(String)
             execute :rsync, "-rzO #{assets_path}/ #{role.user}@#{role.hostname}:#{shared_path}/#{assets_path}"
           elsif assets_path.is_a?(Array)
