@@ -49,7 +49,15 @@ namespace :craft do
     task :pull do
       run_locally do
         release_roles(fetch(:craft_deploy_roles)).each do |role|
-          execute :rsync, "-rzO #{role.user}@#{role.hostname}:#{shared_path}/#{fetch(:assets_path)}/ #{fetch(:assets_path)}"
+          assets_path = fetch(:assets_path)
+          return unless assets_path.present?
+          if assets_path.is_a?(String)
+            execute :rsync, "-rzO #{role.user}@#{role.hostname}:#{shared_path}/#{fetch(:assets_path)}/ #{fetch(:assets_path)}"
+          elsif assets_path.is_a?(Array)
+            assets_path.each do |path|
+              execute :rsync, "-rzO #{role.user}@#{role.hostname}:#{shared_path}/#{path}/ #{path}"
+            end
+          end
         end
       end
     end
@@ -58,7 +66,15 @@ namespace :craft do
     task :push do
       run_locally do
         release_roles(fetch(:craft_deploy_roles)).each do |role|
-          execute :rsync, "-rzO #{fetch(:assets_path)}/ #{role.user}@#{role.hostname}:#{shared_path}/#{fetch(:assets_path)}"
+          assets_path = fetch(:assets_path)
+          return unless assets_path.present?
+          if assets_path.is_a?(String)
+            execute :rsync, "-rzO #{assets_path}/ #{role.user}@#{role.hostname}:#{shared_path}/#{assets_path}"
+          elsif assets_path.is_a?(Array)
+            assets_path.each do |path|
+              execute :rsync, "-rzO #{path}/ #{role.user}@#{role.hostname}:#{shared_path}/#{path}"
+            end
+          end
         end
       end
     end
